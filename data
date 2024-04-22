@@ -1,0 +1,317 @@
+ public function insertUpdateFormBuilder($data, $id, $islogin = [])
+    {
+
+        $formbuilder = $islogin['formbuilder'];
+
+
+        if ($id != '') {
+            $existingReco = $this->getFormbuilderById($id);
+
+            $this->db->table($this->tableFormbuilder)->where('id', $id)->update($data);
+
+            if ($existingReco[0]->table_name !== $data['table_name']) {
+                $this->forge->renameTable($existingReco[0]->table_name, $data['table_name']);
+            }
+
+
+            return 'Form Builder Updated Successfully.';
+        } else {
+            $processDetail = $this->getProcessById($data['process']);
+
+            $insert_id = $this->db->table($this->tableFormbuilder)->insert($data);
+            $insert_id = $this->db->insertID();
+
+            $fields = [
+                'id' => [
+                    'type' => 'INT',
+                    'constraint' => 11,
+                    'auto_increment' => true,
+                    'primary_key' => true,
+                ],
+                'parent_id' => [
+                    'type' => 'INTEGER',
+                    'constraint' => '11',
+                    'null' => TRUE
+                ],
+                'isDNC' => [
+                    'type' => 'INT',
+                    'constraint' => '1',
+                    'null' => TRUE
+                ],
+                'isDNE' => [
+                    'type' => 'INT',
+                    'constraint' => '1',
+                    'null' => TRUE
+                ],
+                'branch_id' => [
+                    'type' => 'INTEGER',
+                    'constraint' => '3',
+                    'null' => TRUE
+                ],
+                'import_status' => [
+                    'type' => 'INTEGER',
+                    'constraint' => '1',
+                    'null' => TRUE
+                ],
+                'san_insert_date' => [
+                    'type' => 'TIMESTAMP',
+                ],
+            ];
+
+            $this->forge->addField($fields);
+            $this->forge->addKey('id', true);
+            $this->forge->addKey('branch_id');
+            $this->forge->addKey('isDNC');
+
+            $this->forge->createTable($data['table_name'], true);
+
+            // $fields = [
+            //     'id' => [
+            //         'type' => 'INT',
+            //         'constraint' => 11,
+            //         'auto_increment' => true,
+            //         'primary_key' => true,
+            //     ],
+            //     'agent_id' => [
+            //         'type' => 'INTEGER',
+            //         'constraint' => '11',
+            //         'null' => TRUE
+            //     ],
+            //     'agent_name' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '150',
+            //         'null' => TRUE
+            //     ],
+            //     'assign_to' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '50',
+            //         'null' => TRUE
+            //     ],
+            //     'log_phone_no' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '16',
+            //         'null' => TRUE
+            //     ],
+            //     'start_time' => [
+            //         'type' => 'datetime',
+            //         'null' => TRUE
+            //     ],
+            //     'pick_time' => [
+            //         'type' => 'datetime',
+            //         'null' => TRUE
+            //     ],
+            //     'end_time' => [
+            //         'type' => 'datetime',
+            //         'null' => TRUE
+            //     ],
+            //     'duration' => [
+            //         'type' => 'INT',
+            //         'constraint' => '11',
+            //         'null' => TRUE
+            //     ],
+            //     'unique_id' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '25',
+            //         'null' => TRUE
+            //     ],
+            //     'team_leader' => [
+            //         'type' => 'INT',
+            //         'constraint' => '3',
+            //         'null' => TRUE
+            //     ],
+            //     'parent_id' => [
+            //         'type' => 'INTEGER',
+            //         'constraint' => '11',
+            //         'null' => TRUE
+            //     ],
+            //     'camp_map_id' => [
+            //         'type' => 'INTEGER',
+            //         'constraint' => '11',
+            //         'null' => TRUE
+            //     ],
+            //     'disposition' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '150',
+            //         'null' => TRUE
+            //     ],
+            //     'sub_disposition' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '150',
+            //         'null' => TRUE
+            //     ],
+            //     'qa_disposition' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '150',
+            //         'null' => TRUE
+            //     ],
+            //     'campaign' => [
+            //         'type' => 'INTEGER',
+            //         'constraint' => '5',
+            //         'null' => TRUE
+            //     ],
+            //     'callback_time' => [
+            //         'type' => 'datetime',
+            //         'null' => TRUE
+            //     ],
+            //     'calledback_time' => [
+            //         'type' => 'datetime',
+            //         'null' => TRUE
+            //     ],
+            //     'callbackType' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '50',
+            //         'null' => TRUE
+            //     ],
+            //     'callbackAttempt' => [
+            //         'type' => 'INT',
+            //         'constraint' => '5',
+            //         'null' => TRUE
+            //     ],
+            //     'callback_no' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '15',
+            //         'null' => TRUE
+            //     ],
+            //     'extension_no' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '16',
+            //         'null' => TRUE
+            //     ],
+            //     'CallType' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '16',
+            //         'null' => TRUE
+            //     ],
+            //     'CallConnected' => [
+            //         'type' => 'INT',
+            //         'constraint' => '1',
+            //         'null' => TRUE
+            //     ],
+            //     'AlterNateNo' => [
+            //         'type' => 'INT',
+            //         'constraint' => '1',
+            //         'null' => TRUE
+            //     ],
+            //     'DID_No' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '16',
+            //         'null' => TRUE
+            //     ],
+            //     'cdr_id' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '50',
+            //         'null' => TRUE
+            //     ],
+            //     'LastIVRDigits' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '50',
+            //         'null' => TRUE
+            //     ],
+            //     'HangupCause' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '50',
+            //         'null' => TRUE
+            //     ],
+            //     'HangupCauseCode' => [
+            //         'type' => 'INT',
+            //         'constraint' => '5',
+            //         'null' => TRUE
+            //     ],
+            //     'SAN_Transfer_To' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '20',
+            //         'null' => TRUE
+            //     ],
+            //     'SAN_Transfer_No' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '20',
+            //         'null' => TRUE
+            //     ],
+            //     'Call_Count' => [
+            //         'type' => 'INT',
+            //         'constraint' => '5',
+            //         'null' => TRUE
+            //     ],
+            //     'crm_id' => [
+            //         'type' => 'BIGINT',
+            //         'constraint' => '16',
+            //         'null' => TRUE
+            //     ],
+            //     'hold_durn' => [
+            //         'type' => 'INT',
+            //         'constraint' => '11',
+            //         'null' => TRUE
+            //     ],
+            //     'wrapup_durn' => [
+            //         'type' => 'BIGINT',
+            //         'constraint' => '11',
+            //         'null' => TRUE
+            //     ],
+            //     'refreshPageCount' => [
+            //         'type' => 'INT',
+            //         'constraint' => '2',
+            //         'null' => TRUE
+            //     ],
+            //     'Latitude' => [
+            //         'type' => 'DOUBLE',
+            //         'null' => TRUE
+            //     ],
+            //     'Longitude' => [
+            //         'type' => 'DOUBLE',
+            //         'null' => TRUE
+            //     ],
+            // ];
+
+            // $this->forge->addField($fields);
+            // $this->forge->addKey('id', true);
+            // $this->forge->addKey('crm_id');
+            // $this->forge->addKey('parent_id');
+            // $this->forge->createTable($data['log_table_name'], TRUE);
+
+            // $fields = [
+            //     'sub_log_id' => [
+            //         'type' => 'INT',
+            //         'constraint' => 11,
+            //         'auto_increment' => true,
+            //         'primary_key' => true,
+            //     ],
+            //     'crm_id' => [
+            //         'type' => 'BIGINT',
+            //         'constraint' => '16',
+            //         'null' => TRUE
+            //     ],
+            //     'cdr_id' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '50',
+            //         'null' => TRUE
+            //     ],
+            //     'reco_file' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '255',
+            //         'null' => TRUE
+            //     ],
+            //     'total_duration' => [
+            //         'type' => 'INT',
+            //         'constraint' => '10',
+            //         'null' => TRUE
+            //     ],
+            //     'bill_duration' => [
+            //         'type' => 'INT',
+            //         'constraint' => '10',
+            //         'null' => TRUE
+            //     ],
+            //     'call_type' => [
+            //         'type' => 'VARCHAR',
+            //         'constraint' => '20',
+            //         'null' => TRUE
+            //     ],
+            // ];
+            // $this->forge->addField($fields);
+            // $this->forge->addKey('sub_log_id', true);
+            // $this->forge->addKey('crm_id');
+
+            // $this->forge->createTable($data['sub_log_table_name'], true);
+
+            return 'Form Builder Added Successfully.';
+        }
+    }
